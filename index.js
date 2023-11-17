@@ -1,3 +1,36 @@
+const rockBtn = document.querySelector(".rock");
+const paperBtn = document.querySelector(".paper");
+const scissorsBtn = document.querySelector(".scissors");
+const playerParaPoints = document.querySelector(".player-points");
+const computerParaPoints = document.querySelector(".computer-points");
+const winnerPara = document.querySelector(".winnerPara");
+const roundWinner = document.querySelector(".round-winner");
+const winContainer = document.querySelector(".display-winner-container");
+
+let playerPoints = 0;
+let playersChoice = "";
+let computerPoints = 0;
+let computersChoice = "";
+let winnerFound = false;
+
+rockBtn.addEventListener("click", (e) => {
+  computersChoice = getComputerChoice();
+  playersChoice = "Rock";
+  updateUI(playRound(playersChoice, computersChoice));
+});
+
+paperBtn.addEventListener("click", (e) => {
+  computersChoice = getComputerChoice();
+  playersChoice = "Paper";
+  updateUI(playRound(playersChoice, computersChoice));
+});
+
+scissorsBtn.addEventListener("click", (e) => {
+  computersChoice = getComputerChoice();
+  playersChoice = "Scissors";
+  updateUI(playRound(playersChoice, computersChoice));
+});
+
 function getComputerChoice() {
   let choices = ["Rock", "Paper", "Scissors"];
   return choices[Math.floor(Math.random() * choices.length)];
@@ -26,53 +59,57 @@ function playRound(playerSelection, computerSelection) {
   }
 }
 
-function game() {
-  const numberOfRounds = 5;
-  let playerCounter = 0;
-  let computerCounter = 0;
-
-  for (let i = 0; i < numberOfRounds; i++) {
-    let playerSelection = prompt("Your choice: ");
-    let computerSelection = getComputerChoice();
-    let result = playRound(playerSelection, computerSelection);
-
-    playerSelection =
-      playerSelection.charAt(0).toUpperCase() + playerSelection.slice(1);
-
-    computerSelection =
-      computerSelection.charAt(0).toUpperCase() + computerSelection.slice(1);
-
-    console.log(playerSelection);
-
+function updateUI(result) {
+  if (!winnerFound) {
     switch (result) {
-      case "tie":
-        console.log("Tied Game!");
-        break;
-
       case "win":
-        console.log(`You Win! ${playerSelection} beats ${computerSelection}`);
-        playerCounter++;
+        playerPoints++;
+        roundWinner.textContent = `Player Wins! ${playersChoice} beats ${computersChoice}`;
+        playerParaPoints.textContent = `Player: ${playerPoints}`;
         break;
 
       case "lose":
-        console.log(`You Lose! ${computerSelection} beats ${playerSelection}`);
-        computerCounter++;
+        computerPoints++;
+        roundWinner.textContent = `Player Lose! ${computersChoice} beats ${playersChoice}`;
+        computerParaPoints.textContent = `Computer: ${computerPoints}`;
+        break;
+
+      case "tie":
+        roundWinner.textContent = "Tie! Nobody scores";
         break;
     }
-  }
 
-  if (playerCounter === computerCounter)
-    console.log(
-      `The game has tied. Player Wins ${playerCounter}, Computer Wins ${computerCounter}.`
-    );
-  else if (playerCounter > computerCounter)
-    console.log(
-      `Player wins with ${playerCounter} wins vs ${computerCounter} wins from the computer.`
-    );
-  else
-    console.log(
-      `Computer wins with ${computerCounter} wins vs ${playerCounter} wins from the player.`
-    );
+    let winner = checkWinner();
+
+    if (winner === "PLAYER" || winner === "COMPUTER") {
+      winnerPara.textContent = `Winner: ${winner}`;
+      let resetBtn = document.createElement("button");
+      resetBtn.textContent = "RESTART";
+      resetBtn.classList.add("restart");
+      winContainer.appendChild(resetBtn);
+      winnerFound = true;
+
+      resetBtn.addEventListener("click", (e) => {
+        resetGame();
+        resetBtn.remove();
+      });
+    }
+  }
 }
 
-game();
+function resetGame() {
+  playerPoints = 0;
+  computerPoints = 0;
+  winnerPara.textContent = "";
+  playerParaPoints.textContent = "Player: 0";
+  computerParaPoints.textContent = "Computer: 0";
+  roundWinner.textContent = "";
+  winnerFound = false;
+}
+
+function checkWinner() {
+  if (playerPoints >= 5) return "PLAYER";
+  if (computerPoints >= 5) return "COMPUTER";
+
+  return null;
+}
