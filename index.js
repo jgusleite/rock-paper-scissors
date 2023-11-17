@@ -36,7 +36,6 @@ function game() {
     let computerSelection = getComputerChoice();
     let result = playRound(playerSelection, computerSelection);
 
-    // Format the string so only the first letter is capitalized.
     playerSelection =
       playerSelection.charAt(0).toUpperCase() + playerSelection.slice(1);
 
